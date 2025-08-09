@@ -1,13 +1,25 @@
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 
 export class RegisterDTO {
   @IsString()
-  userName!: string;
-
-  @IsEmail()
-  email!: string;
+  @IsNotEmpty()
+  userName: string;
 
   @IsString()
-  @MinLength(8)
-  password!: string;
+  @IsNotEmpty()
+  password: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string; // This will enforce email format and presence
+}
+
+export class LoginDTO {
+  @IsString()
+  @IsNotEmpty()
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  password: string;
 }
