@@ -1,15 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from './users.service';
+import { OrderService } from '../order/order.service';
+import { PrismaService } from '../prisma/prisma.service'; // adjust path
 
-describe('UsersService', () => {
-  let service: UsersService;
+describe('OrderService', () => {
+  let service: OrderService;
+
+  // Create a fake PrismaService
+  const mockPrisma = {
+    order: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+    },
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService],
+      providers: [
+        OrderService,
+        {
+          provide: PrismaService,
+          useValue: mockPrisma,
+        },
+      ],
     }).compile();
 
-    service = module.get<UsersService>(UsersService);
+    service = module.get<OrderService>(OrderService);
   });
 
   it('should be defined', () => {
