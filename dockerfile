@@ -1,23 +1,29 @@
-# 1. نستخدم نسخة Node.js الرسمية
-FROM node:18-alpine
+# 1. استخدم صورة Node كأساس
+FROM node:22
 
-# 2. نحدد مجلد العمل داخل الـ container
-WORKDIR /nest-app
+# 2. حدد مكان العمل داخل الحاوية
+WORKDIR /app
 
-# 3. ننسخ ملفات الباكجات (package.json + package-lock.json)
+# 3. انسخ package.json و package-lock.json
 COPY package*.json ./
 
-# 4. نثبت الباكجات
+# 4. ثبت dependencies
 RUN npm install
 
-# 5. ننسخ باقي ملفات المشروع
+# 5. انسخ ملفات Prisma (schema فقط)
+COPY prisma ./prisma
+
+# 6. شغل Prisma generate
+RUN npx prisma generate
+
+# 7. انسخ باقي الملفات
 COPY . .
 
-# 6. نعمل build لـ NestJS
+# 8. ابني التطبيق (NestJS محتاج build للـ dist)
 RUN npm run build
 
-# 7. نفتح البورت
-EXPOSE 5001
+# 9. عرف البورت اللي التطبيق هيشتغل عليه
+EXPOSE 3000
 
-# 8. نشغل السيرفر
+# 10. شغل التطبيق
 CMD ["npm", "run", "start:prod"]
