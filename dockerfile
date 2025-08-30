@@ -1,26 +1,23 @@
-# Stage 1: build
-FROM node:20-alpine AS builder
+# 1. نستخدم نسخة Node.js الرسمية
+FROM node:18-alpine
 
-WORKDIR /app
+# 2. نحدد مجلد العمل داخل الـ container
+WORKDIR /nest-app
 
+# 3. ننسخ ملفات الباكجات (package.json + package-lock.json)
 COPY package*.json ./
+
+# 4. نثبت الباكجات
 RUN npm install
 
+# 5. ننسخ باقي ملفات المشروع
 COPY . .
 
-# generate prisma client here inside container
-RUN npx prisma generate
-
+# 6. نعمل build لـ NestJS
 RUN npm run build
 
-# Stage 2: production
-FROM node:20-alpine AS prod
+# 7. نفتح البورت
+EXPOSE 5001
 
-WORKDIR /app
-
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/package*.json ./
-
-CMD ["node", "dist/main.js"]
+# 8. نشغل السيرفر
+CMD ["npm", "run", "start:prod"]
